@@ -15,7 +15,6 @@
            ROOT & NIGHT THEME
         ===================================================== */
         :root {
-            /* تعديل الألوان لتناسب المظهر الليلي */
             --primary: #8B5CF6; 
             --primary-dark: #7C3AED;
             --primary-soft: rgba(139, 92, 246, 0.1);
@@ -23,21 +22,22 @@
             --cyan: #22D3EE;
             --cyan-soft: rgba(34, 211, 238, 0.1);
 
-            --bg: #030712;       /* أسود عميق جداً */
-            --surface: #111827;  /* كحلي داكن للكروت */
+            --bg: #030712;       
+            --surface: #111827;  
 
-            --text: #F9FAFB;     /* أبيض ناصع للنصوص */
+            --text: #F9FAFB;     
             --text-secondary: #9CA3AF;
             --text-muted: #6B7280;
 
-            --border: #1F2937;   /* حدود داكنة */
+            --border: #1F2937;   
 
             --radius-sm: 10px;
             --radius-md: 16px;
             --radius-lg: 22px;
 
             --shadow-sm: 0 4px 15px rgba(0, 0, 0, 0.4);
-            --shadow-glow: 0 0 25px rgba(139, 92, 246, 0.4); /* تأثير التوهج */
+            /* تم تعديل التوهج ليكون أبيض من الداخل وبنفسجي من الخارج */
+            --shadow-glow: 0 0 15px rgba(255, 255, 255, 0.6), 0 0 35px rgba(139, 92, 246, 0.8);
         }
 
         /* =====================================================
@@ -59,7 +59,7 @@
             background: var(--bg);
             -webkit-font-smoothing: antialiased;
             overflow-x: hidden;
-            position: relative; /* ضروري لخلفية النجوم */
+            position: relative; 
         }
 
         button, input { font-family: inherit; }
@@ -76,43 +76,69 @@
             background: radial-gradient(circle at bottom, #111827 0%, #030712 100%);
         }
 
-        /* توليد النجوم بخاصية box-shadow لتوفير الموارد */
         .stars, .stars2, .stars3 {
             position: absolute;
             top: 0;
             left: 0;
-            width: 2px;
-            height: 2px;
-            background: transparent;
-            /* عينة من النجوم، يمكن زيادتها برمجياً أو باستخدام SCSS، هنا نموذج CSS نقي */
-            box-shadow: 
-                20vw 10vh #FFF, 40vw 30vh #FFF, 60vw 20vh #FFF, 80vw 40vh #FFF,
-                10vw 60vh #FFF, 30vw 80vh #FFF, 50vw 70vh #FFF, 70vw 90vh #FFF,
-                90vw 10vh #FFF, 15vw 95vh #FFF, 85vw 60vh #FFF, 55vw 45vh #FFF;
-            animation: animStar 50s linear infinite;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
         }
 
-        .stars2 {
-            width: 3px;
-            height: 3px;
-            box-shadow: 
-                25vw 15vh #FFF, 45vw 35vh #FFF, 65vw 25vh #FFF, 85vw 45vh #FFF,
-                15vw 65vh #FFF, 35vw 85vh #FFF, 55vw 75vh #FFF, 75vw 95vh #FFF;
-            animation: animStar 100s linear infinite;
+        /* توليد المحتوى النصي بأشكال النجوم مع الشفافية لتكرار الظلال فقط */
+        .stars::before, .stars2::before, .stars3::before {
+            position: absolute;
+            color: transparent;
         }
 
-        .stars3 {
-            width: 4px;
-            height: 4px;
-            box-shadow: 
-                30vw 20vh #FFF, 50vw 40vh #FFF, 70vw 30vh #FFF, 90vw 50vh #FFF;
-            animation: animStar 150s linear infinite;
-            border-radius: 50%;
+        /* النجوم اللامعة الكبيرة ✦ */
+        .stars::before {
+            content: '✦';
+            font-size: 14px;
+            text-shadow: 
+                20vw 10vh 0 #FFF, 40vw 30vh 0 #FFF, 60vw 20vh 0 #FFF, 80vw 40vh 0 #FFF,
+                10vw 60vh 0 #FFF, 30vw 80vh 0 #FFF, 50vw 70vh 0 #FFF, 70vw 90vh 0 #FFF,
+                90vw 10vh 0 #FFF, 15vw 95vh 0 #FFF, 85vw 60vh 0 #FFF, 55vw 45vh 0 #FFF,
+                /* التكرار لدعم الـ Loop */
+                20vw 110vh 0 #FFF, 40vw 130vh 0 #FFF, 60vw 120vh 0 #FFF, 80vw 140vh 0 #FFF,
+                10vw 160vh 0 #FFF, 30vw 180vh 0 #FFF, 50vw 170vh 0 #FFF, 70vw 190vh 0 #FFF,
+                90vw 110vh 0 #FFF, 15vw 195vh 0 #FFF, 85vw 160vh 0 #FFF, 55vw 145vh 0 #FFF;
+            animation: animStar 30s linear infinite;
+        }
+
+        /* النجوم النقطية الصريحة · */
+        .stars2::before {
+            content: '·';
+            font-size: 28px;
+            text-shadow: 
+                25vw 15vh 0 rgba(255,255,255,0.8), 45vw 35vh 0 rgba(255,255,255,0.8), 
+                65vw 25vh 0 rgba(255,255,255,0.8), 85vw 45vh 0 rgba(255,255,255,0.8),
+                15vw 65vh 0 rgba(255,255,255,0.8), 35vw 85vh 0 rgba(255,255,255,0.8), 
+                55vw 75vh 0 rgba(255,255,255,0.8), 75vw 95vh 0 rgba(255,255,255,0.8),
+                /* التكرار لدعم الـ Loop */
+                25vw 115vh 0 rgba(255,255,255,0.8), 45vw 135vh 0 rgba(255,255,255,0.8), 
+                65vw 125vh 0 rgba(255,255,255,0.8), 85vw 145vh 0 rgba(255,255,255,0.8),
+                15vw 165vh 0 rgba(255,255,255,0.8), 35vw 185vh 0 rgba(255,255,255,0.8), 
+                55vw 175vh 0 rgba(255,255,255,0.8), 75vw 195vh 0 rgba(255,255,255,0.8);
+            animation: animStar 60s linear infinite;
+        }
+
+        /* النجوم المفرغة البسيطة ◦ */
+        .stars3::before {
+            content: '◦';
+            font-size: 10px;
+            text-shadow: 
+                30vw 20vh 0 rgba(255,255,255,0.5), 50vw 40vh 0 rgba(255,255,255,0.5), 
+                70vw 30vh 0 rgba(255,255,255,0.5), 90vw 50vh 0 rgba(255,255,255,0.5),
+                /* التكرار لدعم الـ Loop */
+                30vw 120vh 0 rgba(255,255,255,0.5), 50vw 140vh 0 rgba(255,255,255,0.5), 
+                70vw 130vh 0 rgba(255,255,255,0.5), 90vw 150vh 0 rgba(255,255,255,0.5);
+            animation: animStar 90s linear infinite;
         }
 
         @keyframes animStar {
             from { transform: translateY(0); }
-            to { transform: translateY(-100vh); } /* النجوم تتحرك لأعلى */
+            to { transform: translateY(-100vh); }
         }
 
         /* =====================================================
@@ -130,7 +156,7 @@
             position: absolute;
             border-radius: 50%;
             filter: blur(80px);
-            opacity: 0.3; /* تقليل الشفافية لتبدو أفضل مع الظلام */
+            opacity: 0.3; 
             will-change: transform;
         }
 
@@ -171,7 +197,7 @@
             align-items: center;
             justify-content: space-between;
             padding: 0 32px;
-            background: rgba(17, 24, 39, 0.8); /* توافق مع الثيم المظلم */
+            background: rgba(17, 24, 39, 0.8); 
             border-bottom: 1px solid rgba(255, 255, 255, 0.05);
             backdrop-filter: blur(18px);
             position: sticky;
@@ -255,7 +281,6 @@
         ===================================================== */
         .video-grid {
             display: grid;
-            /* تعديل عرض الأعمدة لتناسب الكروت الطولية */
             grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
             gap: 24px;
         }
@@ -277,11 +302,10 @@
             flex-direction: column;
         }
 
-        /* توهج خفيف عند الـ Hover */
         .video-card:hover {
             transform: translateY(-8px);
             box-shadow: var(--shadow-glow);
-            border-color: rgba(139, 92, 246, 0.4);
+            border-color: rgba(255, 255, 255, 0.4); /* تفتيح لون الإطار عند الهوفر ليناسب التوهج */
         }
 
         /* =====================================================
@@ -289,7 +313,7 @@
         ===================================================== */
         .thumbnail-container {
             position: relative;
-            aspect-ratio: 9 / 16; /* أبعاد طولية مثل الفيديوهات القصيرة */
+            aspect-ratio: 9 / 16; 
             overflow: hidden;
             background: #1F2937;
         }
@@ -297,7 +321,6 @@
         .video-thumbnail {
             width: 100%; height: 100%; display: block; object-fit: cover;
             transition: transform .6s ease;
-            /* تحسين الصورة الداكنة */
             filter: brightness(0.9);
         }
 
@@ -332,7 +355,6 @@
         
         .video-title {
             margin: 0 0 6px; font-size: 15px; font-weight: 600; color: #FFF;
-            /* السماح بسطرين للعنوان في الكروت الطولية */
             display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
         }
         
@@ -343,7 +365,7 @@
            BUTTONS (STACKED FOR NARROW CARDS)
         ===================================================== */
         .button-group {
-            display: flex; flex-direction: column; gap: 8px; /* وضع الأزرار فوق بعضها */
+            display: flex; flex-direction: column; gap: 8px; 
         }
 
         .btn {
@@ -389,7 +411,6 @@
         .modal.active { opacity: 1; visibility: visible; }
         
         .modal-container {
-            /* تعديل الحاوية لتناسب الفيديوهات الطولية */
             width: min(500px, 100%); height: 90vh; display: flex; flex-direction: column;
             transform: translateY(18px) scale(.965); transition: transform .4s cubic-bezier(.2,.8,.2,1);
         }
@@ -406,7 +427,7 @@
         .close-btn svg { width: 18px; height: 18px; }
 
         .video-wrapper {
-            position: relative; overflow: hidden; width: 100%; flex-grow: 1; /* تأخذ المساحة المتبقية */
+            position: relative; overflow: hidden; width: 100%; flex-grow: 1; 
             border-radius: 18px; background: black; box-shadow: var(--shadow-glow);
         }
         .video-wrapper iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }

@@ -86,10 +86,12 @@
             pointer-events: none;
         }
 
-        .stars::before, .stars2::before, .stars3::before {
-            position: absolute;
-            color: transparent; /* إخفاء العنصر الأصلي والاعتماد على الظلال */
-        }
+       .stars::before, .stars2::before, .stars3::before {
+    position: absolute;
+    top: 0;
+    left: 0;
+    color: transparent; /* إخفاء العنصر الأصلي والاعتماد على الظلال */
+}
 
         /* النجوم اللامعة الكبيرة ✦ */
         .stars::before {

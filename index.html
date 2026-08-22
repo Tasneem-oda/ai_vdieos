@@ -24,20 +24,11 @@
             text-align: center;
         }
         
-        .header-container {
-            margin-bottom: 40px;
-        }
+        .header-container { margin-bottom: 40px; }
         
-        h1 {
-            font-size: 2.2rem;
-            color: #5C7C8A;
-            margin-bottom: 10px;
-        }
+        h1 { font-size: 2.2rem; color: #5C7C8A; margin-bottom: 10px; }
         
-        p.subtitle {
-            font-size: 1.1rem;
-            color: #718096;
-        }
+        p.subtitle { font-size: 1.1rem; color: #718096; }
         
         .video-grid {
             display: grid;
@@ -50,7 +41,7 @@
         .video-card {
             background: var(--card-bg);
             border-radius: 24px;
-            padding: 25px;
+            padding: 20px;
             box-shadow: 0 8px 30px rgba(0,0,0,0.03);
             transition: transform 0.3s ease, box-shadow 0.3s ease;
             display: flex;
@@ -63,19 +54,24 @@
             transform: translateY(-5px);
             box-shadow: 0 12px 35px rgba(0,0,0,0.06);
         }
+
+        .video-thumbnail {
+            width: 100%;
+            height: 160px;
+            object-fit: cover;
+            border-radius: 16px;
+            margin-bottom: 15px;
+            background-color: #EDF2F7;
+        }
         
         .video-title {
             font-size: 1.5rem;
             font-weight: 700;
             margin-bottom: 20px;
             color: var(--text);
-            line-height: 1.5;
         }
         
-        .button-group {
-            display: flex;
-            gap: 15px;
-        }
+        .button-group { display: flex; gap: 15px; }
         
         .btn {
             padding: 12px 0;
@@ -86,26 +82,67 @@
             flex: 1;
             text-align: center;
             display: inline-block;
+            cursor: pointer;
+            border: none;
+            font-family: 'Tajawal', sans-serif;
+            font-size: 1rem;
         }
         
-        .btn-watch {
-            background-color: var(--primary);
-            color: #2D3748;
-        }
-        
-        .btn-download {
-            background-color: var(--secondary);
-            color: #2D3748;
-        }
-        
-        .btn:hover {
-            filter: brightness(0.95);
+        .btn-watch { background-color: var(--primary); color: #2D3748; }
+        .btn-download { background-color: var(--secondary); color: #2D3748; }
+        .btn:hover { filter: brightness(0.95); }
+        .loading { grid-column: 1 / -1; font-size: 1.2rem; color: #718096; }
+
+        /* تنسيقات النافذة المنبثقة (Modal) */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            backdrop-filter: blur(5px);
         }
 
-        .loading {
-            grid-column: 1 / -1;
-            font-size: 1.2rem;
-            color: #718096;
+        .modal-container {
+            position: relative;
+            width: 90%;
+            max-width: 800px;
+            margin: 40px auto;
+        }
+
+        .close-btn {
+            color: white;
+            font-size: 35px;
+            font-weight: bold;
+            float: left;
+            cursor: pointer;
+            line-height: 1;
+            margin-bottom: 10px;
+            transition: color 0.3s;
+        }
+
+        .close-btn:hover { color: var(--primary); }
+
+        .video-wrapper {
+            position: relative;
+            padding-bottom: 56.25%; /* نسبة العرض للارتفاع 16:9 */
+            height: 0;
+            overflow: hidden;
+            border-radius: 12px;
+            background: #000;
+            clear: both;
+        }
+
+        .video-wrapper iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: 0;
         }
     </style>
 </head>
@@ -119,10 +156,22 @@
         <div class="loading">جاري تحميل الفيديوهات...</div>
     </div>
 
+    <!-- حاوية النافذة المنبثقة لعرض الفيديو -->
+    <div id="videoModal" class="modal">
+        <div class="modal-container">
+            <span class="close-btn" onclick="closeModal()">&times;</span>
+            <div class="video-wrapper">
+                <iframe id="videoPlayer" src="" allow="autoplay"></iframe>
+            </div>
+        </div>
+    </div>
+
     <script>
         const container = document.getElementById('video-container');
+        const modal = document.getElementById('videoModal');
+        const player = document.getElementById('videoPlayer');
 
-        // استخدام مسار /webhook/ المخصص للإنتاج
+        // جلب البيانات من n8n
         fetch('https://tasneemahmed-n8n.hf.space/webhook/0a83a687-92b4-411e-995c-0e540af9342f', {
             method: 'GET'
         })
@@ -136,21 +185,45 @@
                 return;
             }
 
-            // بناء العناصر ديناميكياً وترقيمها
-            container.innerHTML = data.map((video, index) => `
+            container.innerHTML = data.map((video, index) => {
+                // استخدام صورة افتراضية في حال عدم وجود مصغرة
+                const thumbImg = video.thumbnailLink ? video.thumbnailLink.replace('=s220', '=s600') : '';
+                const thumbnailHtml = thumbImg ? `<img src="${thumbImg}" class="video-thumbnail" alt="صورة الفيديو">` : `<div class="video-thumbnail" style="display:flex; align-items:center; justify-content:center; color:#A0AEC0;">لا توجد صورة مصغرة</div>`;
+
+                return `
                 <div class="video-card">
+                    ${thumbnailHtml}
                     <div class="video-title"># ${index + 1}</div>
                     <div class="button-group">
-                        <a href="https://drive.google.com/file/d/${video.id}/view" target="_blank" class="btn btn-watch">مشاهدة 👁️</a>
+                        <button onclick="openModal('${video.id}')" class="btn btn-watch">مشاهدة 👁️</button>
                         <a href="https://drive.google.com/uc?export=download&id=${video.id}" target="_blank" class="btn btn-download">تحميل ⬇️</a>
                     </div>
                 </div>
-            `).join('');
+                `;
+            }).join('');
         })
         .catch(error => {
             console.error('Error:', error);
             container.innerHTML = '<div class="loading" style="color: red;">حدث خطأ أثناء جلب الفيديوهات. يرجى المحاولة لاحقاً.</div>';
         });
+
+        // دوال التحكم في النافذة المنبثقة
+        function openModal(videoId) {
+            player.src = `https://drive.google.com/file/d/${videoId}/preview`;
+            modal.style.display = "block";
+        }
+
+        function closeModal() {
+            modal.style.display = "none";
+            player.src = ""; // تفريغ المصدر لإيقاف تشغيل الفيديو عند الإغلاق
+        }
+
+        // إغلاق النافذة عند الضغط خارجها
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                closeModal();
+            }
+        }
     </script>
 </body>
 </html>

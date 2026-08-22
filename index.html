@@ -121,5 +121,18 @@
         </div>
         `).join('') }}
     </div>
+    <script>
+        fetch('https://tasneemahmed-n8n.hf.space/webhook-test/0a83a687-92b4-411e-995c-0e540af9342f', {
+    method: 'POST', // أو GET حسب الإعدادات
+    headers: {
+        'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ action: "get_data" })
+})
+.then(response => response.json())
+.then(data => {
+    // هنا يتم استخدام البيانات الراجعة من n8n لتحديث شكل الواجهة
+})
+    </script>
 </body>
 </html>

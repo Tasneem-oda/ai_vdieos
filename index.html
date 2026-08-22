@@ -5,14 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>مساحتك الآمنة - الفيديوهات</title>
     <style>
-        /* Importing a soft, friendly Arabic font */
         @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap');
         
         :root {
-            --primary: #A7C7E7; /* Pastel blue - calming and trusting */
-            --secondary: #BBDEDB; /* Pastel mint - refreshing */
-            --bg: #F9FBFD; /* Very soft off-white/blue for less eye strain */
-            --text: #4A5568; /* Soft dark gray instead of harsh black */
+            --primary: #A7C7E7;
+            --secondary: #BBDEDB;
+            --bg: #F9FBFD;
+            --text: #4A5568;
             --card-bg: #FFFFFF;
         }
         
@@ -66,7 +65,7 @@
         }
         
         .video-title {
-            font-size: 1.25rem;
+            font-size: 1.5rem;
             font-weight: 700;
             margin-bottom: 20px;
             color: var(--text);
@@ -102,6 +101,12 @@
         .btn:hover {
             filter: brightness(0.95);
         }
+
+        .loading {
+            grid-column: 1 / -1;
+            font-size: 1.2rem;
+            color: #718096;
+        }
     </style>
 </head>
 <body>
@@ -110,29 +115,42 @@
         <p class="subtitle">خذ نفساً عميقاً.. اختر ما تود مشاهدته اليوم</p>
     </div>
     
-    <div class="video-grid">
-        {{ $input.all().map(item => item.json).sort((a, b) => new Date(b['Upload Time'] || 0) - new Date(a['Upload Time'] || 0)).map(row => `
-        <div class="video-card">
-            <div class="video-title">${row['Hook'] || 'محتوى للاسترخاء'}</div>
-            <div class="button-group">
-                <a href="${row['Final Video']}" target="_blank" class="btn btn-watch">مشاهدة 👁️</a>
-                <a href="${row['Final Video']}" download target="_blank" class="btn btn-download">تحميل ⬇️</a>
-            </div>
-        </div>
-        `).join('') }}
+    <div class="video-grid" id="video-container">
+        <div class="loading">جاري تحميل الفيديوهات...</div>
     </div>
+
     <script>
-        fetch('https://tasneemahmed-n8n.hf.space/webhook-test/0a83a687-92b4-411e-995c-0e540af9342f', {
-    method: 'POST', // أو GET حسب الإعدادات
-    headers: {
-        'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({ action: "get_data" })
-})
-.then(response => response.json())
-.then(data => {
-    // هنا يتم استخدام البيانات الراجعة من n8n لتحديث شكل الواجهة
-})
+        const container = document.getElementById('video-container');
+
+        // استخدام مسار /webhook/ المخصص للإنتاج
+        fetch('https://tasneemahmed-n8n.hf.space/webhook/0a83a687-92b4-411e-995c-0e540af9342f', {
+            method: 'GET'
+        })
+        .then(response => {
+            if (!response.ok) throw new Error('فشل الاتصال بالخادم');
+            return response.json();
+        })
+        .then(data => {
+            if (!data || data.length === 0) {
+                container.innerHTML = '<div class="loading">لا توجد فيديوهات متاحة حالياً.</div>';
+                return;
+            }
+
+            // بناء العناصر ديناميكياً وترقيمها
+            container.innerHTML = data.map((video, index) => `
+                <div class="video-card">
+                    <div class="video-title"># ${index + 1}</div>
+                    <div class="button-group">
+                        <a href="https://drive.google.com/file/d/${video.id}/view" target="_blank" class="btn btn-watch">مشاهدة 👁️</a>
+                        <a href="https://drive.google.com/uc?export=download&id=${video.id}" target="_blank" class="btn btn-download">تحميل ⬇️</a>
+                    </div>
+                </div>
+            `).join('');
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            container.innerHTML = '<div class="loading" style="color: red;">حدث خطأ أثناء جلب الفيديوهات. يرجى المحاولة لاحقاً.</div>';
+        });
     </script>
 </body>
 </html>

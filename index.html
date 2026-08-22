@@ -36,7 +36,7 @@
             --radius-lg: 22px;
 
             --shadow-sm: 0 4px 15px rgba(0, 0, 0, 0.4);
-            /* تم تعديل التوهج ليكون أبيض من الداخل وبنفسجي من الخارج */
+            /* تأثير التوهج أبيض من الداخل وبنفسجي من الخارج */
             --shadow-glow: 0 0 15px rgba(255, 255, 255, 0.6), 0 0 35px rgba(139, 92, 246, 0.8);
         }
 
@@ -56,7 +56,8 @@
             min-height: 100vh;
             font-family: 'IBM Plex Sans Arabic', sans-serif;
             color: var(--text);
-            background: var(--bg);
+            /* تمت إزالة لون الخلفية المصمت لكي تظهر النجوم من الخلف */
+            background: transparent; 
             -webkit-font-smoothing: antialiased;
             overflow-x: hidden;
             position: relative; 
@@ -85,10 +86,9 @@
             pointer-events: none;
         }
 
-        /* توليد المحتوى النصي بأشكال النجوم مع الشفافية لتكرار الظلال فقط */
         .stars::before, .stars2::before, .stars3::before {
             position: absolute;
-            color: transparent;
+            color: transparent; /* إخفاء العنصر الأصلي والاعتماد على الظلال */
         }
 
         /* النجوم اللامعة الكبيرة ✦ */
@@ -103,7 +103,7 @@
                 20vw 110vh 0 #FFF, 40vw 130vh 0 #FFF, 60vw 120vh 0 #FFF, 80vw 140vh 0 #FFF,
                 10vw 160vh 0 #FFF, 30vw 180vh 0 #FFF, 50vw 170vh 0 #FFF, 70vw 190vh 0 #FFF,
                 90vw 110vh 0 #FFF, 15vw 195vh 0 #FFF, 85vw 160vh 0 #FFF, 55vw 145vh 0 #FFF;
-            animation: animStar 30s linear infinite;
+            animation: animStar 30s linear infinite; /* تسريع الحركة */
         }
 
         /* النجوم النقطية الصريحة · */
@@ -305,7 +305,7 @@
         .video-card:hover {
             transform: translateY(-8px);
             box-shadow: var(--shadow-glow);
-            border-color: rgba(255, 255, 255, 0.4); /* تفتيح لون الإطار عند الهوفر ليناسب التوهج */
+            border-color: rgba(255, 255, 255, 0.4);
         }
 
         /* =====================================================
@@ -615,7 +615,8 @@
         });
 
         function openModal(videoId, title) {
-            player.src = `https://drive.google.com/file/${videoId}/preview`;
+            /* تم إصلاح الرابط بإضافة حرف /d/ لكي يعرض جوجل درايف الفيديو */
+            player.src = `https://drive.google.com/file/d/${videoId}/preview`;
             modalTitle.textContent = title || 'مشاهدة الفيديو';
             modal.classList.add('active');
             document.body.style.overflow = 'hidden';
@@ -636,7 +637,9 @@
         function updateCount(count = videos.length) { videoCount.textContent = count === 0 ? 'لا توجد فيديوهات' : `${count} فيديو`; }
 
         function escapeHTML(value) { return String(value).replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[char])); }
-        function escapeAttribute(value) { return String(value).replace(/\\/g, '\\\\').replace(/'/g, "\\'"); }
+        
+        /* تحسين الأمان لمنع كسر خصائص HTML عبر علامات التنصيص */
+        function escapeAttribute(value) { return String(value).replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/"/g, '&quot;'); }
 
         loadVideos();
     </script>

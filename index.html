@@ -599,7 +599,7 @@
                             <div class="video-meta"><span>فيديو </span><span class="meta-dot"></span><span>جاهز</span></div>
                             <div class="button-group">
                                 <button class="btn btn-watch" onclick="openModal('${escapeAttribute(video.id)}', '${escapeAttribute(title)}')">${icons.play} مشاهدة</button>
-                                <a href="https://drive.google.com/uc?export=download&id=${encodeURIComponent(video.id)}" target="_blank" class="btn btn-download">${icons.download} تحميل</a>
+                                <button class="btn btn-download" onclick="forceDownload('${escapeAttribute(video.id)}')">${icons.download} تحميل</button>
                             </div>
                         </div>
                     </article>`;
@@ -644,6 +644,22 @@
         function escapeAttribute(value) { return String(value).replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/"/g, '&quot;'); }
 
         loadVideos();
+        function forceDownload(fileId) {
+    // تغيير النطاق من drive إلى docs لتجنب اعتراض نظام التشغيل للرابط
+    const downloadUrl = `https://docs.google.com/uc?export=download&id=${encodeURIComponent(fileId)}`;
+    
+    // إنشاء Iframe مخفي للتعامل مع طلب التحميل في الخلفية دون مغادرة الصفحة
+    let iframe = document.getElementById('hidden-downloader');
+    if (!iframe) {
+        iframe = document.createElement('iframe');
+        iframe.id = 'hidden-downloader';
+        iframe.style.display = 'none';
+        document.body.appendChild(iframe);
+    }
+    
+    // توجيه الـ Iframe للرابط سيبدأ التحميل فوراً
+    iframe.src = downloadUrl;
+}
     </script>
 </body>
 </html>
